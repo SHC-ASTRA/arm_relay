@@ -61,8 +61,7 @@ class ArmRelay:
         elif "true" in status:
             self.homing_success = True
 
-    def enable_actuators(self,enable_srv):
-        
+    def enable_actuators(self,enable_srv):        
         if self.actuators_enabled and not enable_srv.enable:
             self.enable_pin.off()
             rospy.loginfo('Disabling Actuators')
@@ -74,13 +73,15 @@ class ArmRelay:
         return EnableActuatorsResponse(self.actuators_enabled)
 
     def process_rate_cmd(self, rate_cmd):
+        if rate_cmd.axis > 4:
+            return
+            
         self.ser.write(str(rate_cmd.axis) + ',' + str(rate_cmd.desiredRate) + "\n")
         
     def process_status(self, data):
         self.status_pub.publish(str(data))
         
-    def process_feedback(self, data):
-        
+    def process_feedback(self, data):        
         actuatorFeedback = ActuatorFeedback()
         
         # parse input data into keys for reference
@@ -90,7 +91,7 @@ class ArmRelay:
             name, value = pair.split('=')
             results[name] = value
             
-        actuatorFeedback.axis = int(results['x'])
+        actuatorFeedback.axis = int(results['x'])        
         actuatorFeedback.angle = float(results['a'])
         actuatorFeedback.actualRate = float(results['r'])
         
