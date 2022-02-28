@@ -1,5 +1,6 @@
 # Request Message
 bool home=1
+bool axis1Low
 ---
 # Response Message
 bool success

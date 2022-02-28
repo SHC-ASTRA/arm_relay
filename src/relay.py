@@ -48,7 +48,10 @@ class ArmRelay:
 
     def home_arm_base(self, home_srv):
         if not self.homing_in_progress and not self.homing_success:
-            self.ser.write('h 0\n')
+            if home_srv.axis1Low:
+                self.ser.write('l 0\n')
+            else:
+                self.ser.write('h 0\n')
             self.homing_in_progress = True
         
         return HomeArmBaseResponse(self.homing_success)
